@@ -1,14 +1,54 @@
-* {
-width: auto;
+body {
+width: 1000px;
 height: auto;
 background-color: white;
 font-family: arial;
 }
 
+#container {
+	display: inline-block;
+}
 
-#welcome {
-	width: 500px;
-	height:500px;
+#picture {
+	display: inline-block;
+	width: 450px;
+	height:auto;
 	background-color: white;
 	text-align: center;
+	vertical-align: top;
 }
+
+
+#players{
+	margin-left: 100px;
+	display: inline-block;
+}
+.player1 {
+	display: inline-block;
+}
+
+.player2 {
+	display: inline-block;
+}
+.player3 {
+	display: inline-block;
+}
+.player4 {
+	display: inline-block;
+}
+
+#footer {
+	display: inline-block;
+}
+
+.chatroon {
+ width: 600px;
+ display: inline-block;
+}
+
+.points {
+	display: inline-block;
+	width: 200px;
+}
+
+
