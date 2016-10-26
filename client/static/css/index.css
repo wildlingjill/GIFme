@@ -1,14 +1,11 @@
 * {
 width: auto;
 height: auto;
-background-color: white;
-font-family: arial;
 }
 
 
-#welcome {
-	width: 500px;
-	height:500px;
-	background-color: white;
+.jumbotron {
+	width: 700px;
 	text-align: center;
 }
+

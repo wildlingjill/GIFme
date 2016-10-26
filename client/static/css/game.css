@@ -1,3 +1,8 @@
+*{
+	margin:0px;
+	padding:0px; 
+}
+
 body {
 width: 1000px;
 height: auto;
@@ -5,50 +10,57 @@ background-color: white;
 font-family: arial;
 }
 
+h1 {
+	font-size: 35px;
+}
+
 #container {
+	margin-top: 80px;
 	display: inline-block;
 }
 
 #picture {
 	display: inline-block;
-	width: 450px;
-	height:auto;
-	background-color: white;
+	margin-right: 2px;
+	width: 500px;
+	height:400px;
+	background-color: gray;
 	text-align: center;
 	vertical-align: top;
 }
 
 
 #players{
-	margin-left: 100px;
+	background-color: gray;
 	display: inline-block;
-}
-.player1 {
-	display: inline-block;
+	height: 400px;
+	width: 200px;
 }
 
-.player2 {
-	display: inline-block;
-}
-.player3 {
-	display: inline-block;
-}
-.player4 {
-	display: inline-block;
-}
 
 #footer {
 	display: inline-block;
 }
 
-.chatroon {
- width: 600px;
- display: inline-block;
+.chatroom {
+	margin-top: 10px;
+	margin-right: 2px;
+	padding-left: 10px;
+	text-align: left;
+	vertical-align: top;
+	background-color: gray;
+	width: 500px;
+	height: 200px;
+	display: inline-block;
 }
 
 .points {
-	display: inline-block;
+	margin-top: 10px;
+	text-align: left;
+	background-color: gray;
 	width: 200px;
+	height: 200px;
+	display: inline-block;
 }
 
 
