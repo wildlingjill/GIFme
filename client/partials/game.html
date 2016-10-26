@@ -1,12 +1,4 @@
-<html>
-<head>
-	<title>GIFme Game</title>
-	<link rel="stylesheet" type="text/css" href="../static/css/game.css">
-
-</head>
-
-<body><center>
-
+<center>
 <div id='container'>
 
 <div id='picture'>
@@ -43,7 +35,10 @@
 <div id='footer'>
 <div class='chatroom'><br>
 	<h1>Chatroom</h1>
-		<p>Bottom left chatroom</p>
+	<ul id="messages"></ul>
+	<form>
+		<input id="m" autocomplete="off" ng-model='newMessage.content'/><input type='submit' value="Send" ng-click='socketMessage()'>
+	</form>
 </div>
 
 <div class='points'>
@@ -59,5 +54,3 @@
 </div>
 
 </center>
-</body>
-</html>

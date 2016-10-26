@@ -6,19 +6,19 @@ app.config(function ($routeProvider) {
 
 	.when('/',{
 		templateUrl: 'partials/welcome.html',
-		controller: 'loginController',
+		controller: 'welcomeController',
 		css: 'static/css/index.css'
 	})
 
 	.when('/game',{
 		templateUrl: 'partials/game.html',
-		controller: 'dashController',
+		controller: 'gameController',
 		css: 'static/css/game.css'
 	})
 
 	.when('/results',{
 		templateUrl: 'partials/results.html',
-		controller: 'viewQuestionController',
+		controller: 'resultController',
 		css: 'static/css/results.css'
 	})
 
@@ -120,26 +120,38 @@ app.factory('questionFactory', ['$http', function($http) {
 	return factory;
 }]);
 
-app.factory('userFactory', ['$http', function($http) {
-	var factory = {};
 
-	factory.login = function(user, callback){
-		$http.post('/login', user).then(function(response){
-			callback(response.data);
-		});
-	};
+// ***** SOCKET FACTORY *****
+app.factory('socket', function ($rootScope) {
+  	var socket = io.connect();
+  	return {
+    	on: function (eventName, callback) {
+      		socket.on(eventName, function () {
+        		var args = arguments;
+        		$rootScope.$apply(function () {
+          			callback.apply(socket, args);
+        		});
+      		});
+    	},
+    	emit: function (data, callback) {
+      		socket.emit(data, function () {
+        		var args = arguments;
+        		$rootScope.$apply(function () {
+          			if (callback) {
+            			callback.apply(socket, args);
+          			}
+        		});
+      		})
+    	},
+    	currentId: function(){
+        	return socket.id;
+    	}
+  	};
+});
 
-	factory.getUser = function(callback){
-		$http.get('/user').then(function(response){
-			callback(response.data);
-		});
-	};
 
-	return factory;
-
-}]);
-
-app.controller('loginController', function($scope, questionFactory, userFactory, $routeParams, $location, $cookies, $rootScope) {
+// ***** CONTROLLERS *****
+app.controller('welcomeController', function($scope, questionFactory, $routeParams, $location, $rootScope, socket) {
 /*
 	THIS INDEX METHOD ACCESSES THE FRIENDS FACTORY AND RUNS THE FRIENDS INDEX.
 	WE MIGHT RE USE INDEX A FEW TIMES, SO TO MINIMIZE REPETITION WE SET IT AS A VARIABLE.
@@ -154,52 +166,49 @@ app.controller('loginController', function($scope, questionFactory, userFactory,
 
 });
 
-app.controller('createController', function($scope, questionFactory, userFactory, $routeParams, $location, $cookies, $rootScope){
+app.controller('gameController', function($scope, questionFactory, $routeParams, $location, $rootScope, socket){
 
-	userFactory.getUser(function(user){
-		if(!user.username){
-			$location.url('/index');
-		} else {
-			$scope.username = user.username;
-		}
-	});	
+	// userFactory.getUser(function(user){
+	// 	if(!user.username){
+	// 		$location.url('/index');
+	// 	} else {
+	// 		$scope.username = user.username;
+	// 	}
+	// });	
 
-	$scope.addQuestion = function(){
-		$scope.newQuestion.author = $scope.username;
-		console.log($scope.newQuestion);
-		$scope.errors = {};
-		$scope.questions = {};
-		questionFactory.create($scope.newQuestion, function(data){
-			if(data.errors){
-				console.log(data.errors);
-				$scope.errors = data.errors;
-			} else {
-				$location.url('/');
-			}
-		})
-	}
-
-	// $scope.create = function(){
-	// 	$scope.errors={};
-	// 	friendsFactory.create($scope.newfriend, function(data){
+	// $scope.addQuestion = function(){
+	// 	$scope.newQuestion.author = $scope.username;
+	// 	console.log($scope.newQuestion);
+	// 	$scope.errors = {};
+	// 	$scope.questions = {};
+	// 	questionFactory.create($scope.newQuestion, function(data){
 	// 		if(data.errors){
 	// 			console.log(data.errors);
 	// 			$scope.errors = data.errors;
 	// 		} else {
-	// 			friendsFactory.index(function(data){
-	// 				$scope.friends = data;
-	// 				$scope.newfriend = {};
-	// 				$location.url('/');
-	// 			});
+	// 			$location.url('/');
 	// 		}
 	// 	})
-		
 	// }
+
+	// can put this script in an angular controller
+	// $scope.socketMessage = function(){
+	// 	socket.emit('chat message', $scope.newMessage.content);
+	// 	$scope.newMessage.content = '';
+	// 	return false;
+	// };
+
+	// socket.on('chat message', function(msg){	
+	// 	document.getElementById('messages').innerHTML = "<li>{{msg}}</li>";
+	// 	$compile( document.getElementById('messages') )($scope);
+	// });
+
+
 
 	
 }); 
 
-app.controller('dashController', function($scope, questionFactory, userFactory, $routeParams, $location, $cookies, $rootScope) {
+app.controller('resultController', function($scope, questionFactory, userFactory, $routeParams, $location, $rootScope, socket) {
 
 	questionFactory.getQuestions(function(data){
 		$scope.questions = data;
@@ -214,69 +223,8 @@ app.controller('dashController', function($scope, questionFactory, userFactory, 
 		}
 	});		
 
-	// $scope.delete = function(data){
-	// 	questionFactory.delete(data, function(){
-	// 		questionFactory.getQuestions(function(data){
-	// 			$scope.questions = data;
-	// 		});
-	// 	});
-	// };
-
 });
 
-app.controller('viewQuestionController', function($scope, questionFactory, userFactory, $routeParams, $location, $cookies, $rootScope){
 
-	questionFactory.show($routeParams.question_id, function(data){
-		$scope.question = data;
-	});
-
-	$scope.like = function(answer){
-		questionFactory.like($routeParams.question_id, answer, function(){
-			questionFactory.show($routeParams.question_id, function(data){
-				$scope.question = data;
-			});
-		});
-	};
-
-	$scope.addAnswer = function(){
-		userFactory.getUser(function(user){
-			if(!user.username){
-				$location.url('/index');
-			} else {
-				$scope.username = user.username;
-				$scope.newAnswer.author = $scope.username;
-				questionFactory.answer($routeParams.question_id, $scope.newAnswer, function(data){
-					if (data.errors){
-						console.log(data.errors);
-					} else {
-						$location.url('/');
-					}
-				});
-			}
-		});
-	};
-
-})
-
-// 	console.log($routeParams);
-// 	friendsFactory.show($routeParams.friend_id, function(data){
-// 		$scope.friend = data;
-// 		console.log($scope.friend);
-// 	});
-	
-	
-// 	$scope.update = function(data){
-// 		console.log($scope.updateFriend);
-// 		if (!$scope.updateFriend.friend_id){
-// 			$scope.updateFriend._id = $routeParams.friend_id;
-// 		}
-// 		friendsFactory.update($scope.updateFriend, function(){
-// 			friendsFactory.index(function(data){
-// 				$scope.friends = data;
-// 				$scope.updateFriend = {};
-// 				$location.url('/');
-// 			})
-// 		})
-// 	}
 
 
